@@ -1,0 +1,76 @@
+{% extends 'main/base.html'%}
+{% block title %}
+    Home page
+{% endblock %}
+{% block content %}
+    <h1>The home page</h1>
+    <h2>{{data}}</h2>
+    <div>
+        <h3 id="server_time">{{ now }}</h3>
+    </div>
+    <div>
+        <h2 id="price">{{ latest_price }}</h2>
+        <h2 id="latest_time">{{ latest_time }}</h2>
+    </div>
+{% endblock %}
+{% block script %}
+
+const updateTime = 1000
+
+    function updateServerTime() {
+        fetch('/api/current-time/')
+        .then(response => response.json())
+        .then(data => {
+            const timeElement = document.getElementById('server_time');
+            if (timeElement) {
+                timeElement.textContent = data.time;
+                console.log("Updated time to:", data.time);
+            } else {
+                console.error("Could not find server_time element");
+            }
+            setTimeout(updateServerTime, updateTime);
+        })
+        .catch(error => {
+            console.error('Error fetching time:', error);
+        });
+    }
+    function updatePrice(){
+        fetch('/api/current-price/')
+        .then(response => response.json())
+        .then(data => {
+            const priceElement = document.getElementById('price');
+            if (priceElement) {
+                priceElement.textContent = data.price;
+                console.log("Updated price: ", data.price);
+            } else {
+                console.log("Could not update price.");
+            }
+            setTimeout(updatePrice, updateTime);
+        })
+        .catch(error => {
+            console.log('Error while updating price:', error)
+        });
+    }
+    function showLatestTime(){
+        fetch('/api/checked-time/')
+        .then(response => response.json())
+        .then(data => {
+            const latestTimeElement = document.getElementById('latest_time');
+            if (latestTimeElement) {
+                latestTimeElement.textContent = data.latest_time;
+                console.log("Latest checked time: ", data.latest_time);
+            } else {
+                console.error("Could not check time");
+            }
+            setTimeout(showLatestTime, updateTime);
+        })
+        .catch(error => {
+            console.error('Error while showing latest update time:', error)
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateServerTime();
+        updatePrice();
+        showLatestTime();
+    });
+{% endblock %}
