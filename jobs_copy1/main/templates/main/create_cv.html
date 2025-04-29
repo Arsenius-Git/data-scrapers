@@ -1,0 +1,12 @@
+{% extends 'main/base.html '%}
+{% block title%}
+    Cv creator
+{% endblock %}
+{% block content %}
+    <h3>Cv creation page</h3>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'main/base.html' %}
+{% block title %}
+  <title>HomePage</title>
+
+<style>
+.job-listing, .cv-listing {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Section titles styling */
+.job-listing h3, .cv-listing h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 16px;
+}
+
+/* Content styling */
+.job-listing h4, .cv-listing h4 {
+  margin: 5px 0;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+/* Company name/special highlight styling */
+.job-listing p, .cv-listing p {
+  margin: 10px 0;
+  font-weight: bold;
+  color: #555;
+}
+
+/* Delete button styling - same for both types */
+.job-listing button, .cv-listing button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.job-listing button:hover, .cv-listing button:hover {
+  background-color: #d32f2f;
+}
+
+/* CV listings specific styles - slightly different color scheme */
+.cv-listing {
+  border-color: #4CAF50;
+  background-color: #f9fff9;
+}
+
+.cv-listing h3 {
+  color: #2e7d32;
+}
+</style>
+{% endblock%}
+{% block content %}
+  {% if user.is_authenticated %}
+    <h3>elo</h3>
+    <h3>Want to post a <a href="{%url 'create_offer'%}">job</a> offer?</h3>
+    <h3>Want to post your <a href="{% url 'create_cv'%}">cv</a>?</h3>
+    {% if jobs or cv %}
+      <h2>Already existing offers:</h2>
+      {%for job_offer in jobs%}
+        <div class="job-listing">
+          <h3>Looking for:</h3>
+          <h4>{{job_offer.job_name}}</h4>
+          <h3>Minimum experience: </h3>
+          <h4>{{job_offer.min_experience}}</h4>
+          <h3>Requirements: </h3>
+          <h4>{{job_offer.requirements}}</h4>
+          <p>{{job_offer.company_name}}</p>
+          <form action="" method="POST">
+            {% csrf_token %}
+            <button type="submit" name="delete_job" value="{{job_offer.id}}">Delete</button>
+          </form>
+
+        </div>
+      {%endfor%}
+      {% for item in cv %}
+        <div class="cv-listing">
+          <h3>The job title:</h3>
+          <h4>{{item.job_name}}</h4>
+          <h3>Experience:</h3>
+          <h4>{{item.experience}}</h4>
+          <h3>Abilities</h3>
+          <h4>{{item.abilities}}</h4>
+          <form action="" method="POST">
+            {%csrf_token%}
+            <button type="submit" name="delete_cv" value="{{item.id}}">Delete</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h2>No existing offers found</h2>
+    {% endif %}
+  {% else %}
+    <h2>Please <a href="/accounts/register/">register</a> or <a href="/accounts/login/">login</a> to start using the site!</h2>
+  {% endif %}
+{% endblock %}
